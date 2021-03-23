@@ -1,17 +1,33 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+class App extends React.Component {
+    //special f-ion. non required. iskvieciama kiekviena karta kai app clases objektas sukuriamas (kaip ir oop)
+    constructor(props) {
+        super(props); // tam, kad tevo konstruktorius butu iskviestas, nes siaip constructorius overridina tevo 
+        this.state = { lat: null, errorMessage: '' }; //state object iniciavimas. po iniciavimo bus pasiekiamas visoje klaseje
+        //kai pakeiciam state, render metodas is naujo pasileidzia. todel iniciavimus reikia iskelti is render (ne tik iniciavimus, bet tai, ko nenori, kad vel uzsikrovinetu)
+        window.navigator.geolocation.getCurrentPosition(
+            (position) => {
+                this.setState({ lat: position.coords.latitude }); //butinai naudoti setState, no direct asignments
+            },
+            (err) => {
+                this.setState({ errorMessage: err.message });
+            }
+        );
+    }
+    //render() is required
+    render() {
+        if (this.state.errorMessage && !this.state.lat) {
+            return <div>Error: {this.state.errorMessage}</div>
+        }
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+        if (!this.state.errorMessage && this.state.lat) {
+            return <div>Latitude: {this.state.lat}</div>
+        }
+        //jei vienas is virsutiniu suveikia, tai iki sito neprieis vis tiek 
+        return <div>Loading...</div>
+    }
+}
+
+ReactDOM.render(<App />, document.querySelector('#root'));
