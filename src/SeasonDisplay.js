@@ -1,6 +1,7 @@
 import React from 'react'
 
-function SeasonDisplay() {
+function SeasonDisplay(props) {
+
     return (
         <div>
             Season Display
